@@ -38,4 +38,9 @@ android {
         }
     }
     sourceSets.main.jni.srcDirs = ['src/main/jni']
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    ndkVersion '21.1.6363665 rc3'
 }

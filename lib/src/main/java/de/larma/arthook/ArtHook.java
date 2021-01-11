@@ -46,23 +46,23 @@ public final class ArtHook {
         final List<Arch> archs = Arch.getArchitectures();
         for (Arch arch : archs) {
             switch (arch) {
-                case ARM32:
-                    INSTRUCTION_SET_HELPER = new Arm32();
-                    break;
-                case THUMB2:
-                    INSTRUCTION_SET_HELPER = new Thumb2();
-                    break;
-                case ARM64:
-                    INSTRUCTION_SET_HELPER = new Arm64();
-                    break;
-                case x86:
-                    // TODO: Support x86
-                    // INSTRUCTION_SET_HELPER = new X86();
-                    break;
-                case x86_64:
-                    // TODO: Support x86_64
-                    // INSTRUCTION_SET_HELPER = new X64();
-                    break;
+            case ARM32:
+                INSTRUCTION_SET_HELPER = new Arm32();
+                break;
+            case THUMB2:
+                INSTRUCTION_SET_HELPER = new Thumb2();
+                break;
+            case ARM64:
+                INSTRUCTION_SET_HELPER = new Arm64();
+                break;
+            case x86:
+                // TODO: Support x86
+                // INSTRUCTION_SET_HELPER = new X86();
+                break;
+            case x86_64:
+                // TODO: Support x86_64
+                // INSTRUCTION_SET_HELPER = new X64();
+                break;
             }
 
             if (INSTRUCTION_SET_HELPER != null) {
@@ -80,8 +80,12 @@ public final class ArtHook {
     private static HookPage handleHookPage(ArtMethod original, ArtMethod replacement) {
         long originalEntryPoint = INSTRUCTION_SET_HELPER.toMem(
                 original.getEntryPointFromQuickCompiledCode());
+
         if (!pages.containsKey(originalEntryPoint)) {
-            pages.put(originalEntryPoint, new HookPage(INSTRUCTION_SET_HELPER, originalEntryPoint,
+
+            pages.put(originalEntryPoint, new HookPage(
+                    INSTRUCTION_SET_HELPER,
+                    originalEntryPoint,
                     getQuickCompiledCodeSize(original)));
         }
 

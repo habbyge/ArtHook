@@ -28,7 +28,10 @@ public class LMR0 extends VersionHelper {
     @Override
     public Object createArtMethod() {
         try {
-            Constructor constructor = Class.forName(ART_METHOD_CLASS_NAME).getDeclaredConstructor();
+            Constructor constructor = Class
+                    .forName(ART_METHOD_CLASS_NAME)
+                    .getDeclaredConstructor();
+
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (Exception e) {
@@ -39,7 +42,10 @@ public class LMR0 extends VersionHelper {
     @Override
     public Method newMethod(Object method, ArtMethod artMethod) {
         try {
-            Method m = Method.class.getConstructor(Class.forName(ART_METHOD_CLASS_NAME)).newInstance(artMethod.artMethod);
+            Method m = Method.class
+                    .getConstructor(Class.forName(ART_METHOD_CLASS_NAME))
+                    .newInstance(artMethod.artMethod);
+
             m.setAccessible(true);
             return m;
         } catch (Throwable t) {
@@ -50,7 +56,9 @@ public class LMR0 extends VersionHelper {
     @Override
     public Constructor<?> newConstructor(Object constructor, ArtMethod artMethod) {
         try {
-            Constructor<?> c = Constructor.class.getConstructor(Class.forName(ART_METHOD_CLASS_NAME)).newInstance(artMethod.artMethod);
+            Constructor<?> c = Constructor.class
+                    .getConstructor(Class.forName(ART_METHOD_CLASS_NAME))
+                    .newInstance(artMethod.artMethod);
             c.setAccessible(true);
             return c;
         } catch (Throwable t) {
@@ -61,8 +69,12 @@ public class LMR0 extends VersionHelper {
     @Override
     public void copy(ArtMethod src, ArtMethod dst) {
         try {
-            // Copy fields of java.lang.reflect.ArtMethod (this.artMethod => clone.artMethod)
-            for (Field field : Class.forName(ART_METHOD_CLASS_NAME).getDeclaredFields()) {
+            // Copy fields of java.lang.reflect.ArtMethod (
+            // this.artMethod => clone.artMethod)
+            for (Field field : Class
+                    .forName(ART_METHOD_CLASS_NAME)
+                    .getDeclaredFields()) {
+
                 field.setAccessible(true);
                 dst.set(field, src.get(field));
             }

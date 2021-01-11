@@ -78,8 +78,9 @@ public class HookPage {
     }
 
     private void allocate() {
-        if (allocatedAddress != 0)
+        if (allocatedAddress != 0) {
             deallocate();
+        }
         allocatedSize = getSize();
         allocatedAddress = Memory.map(allocatedSize);
     }
@@ -97,7 +98,8 @@ public class HookPage {
     }
 
     public int getSize() {
-        return instructionHelper.sizeOfTargetJump() * getHooksCount() + instructionHelper.sizeOfCallOriginal();
+        return instructionHelper.sizeOfTargetJump() * getHooksCount()
+                + instructionHelper.sizeOfCallOriginal();
     }
 
     public byte[] create() {
@@ -105,14 +107,20 @@ public class HookPage {
         int offset = 0;
         for (Hook hook : getHooks()) {
             byte[] targetJump = instructionHelper.createTargetJump(hook);
-            System.arraycopy(targetJump, 0, mainPage, offset, instructionHelper.sizeOfTargetJump());
+
+            System.arraycopy(targetJump, 0, mainPage, offset,
+                    instructionHelper.sizeOfTargetJump());
+
             offset += instructionHelper.sizeOfTargetJump();
         }
         if (quickCompiledCodeSize > instructionHelper.sizeOfDirectJump()) {
-            byte[] callOriginal = instructionHelper.createCallOriginal(originalAddress, originalPrologue);
+            byte[] callOriginal = instructionHelper.createCallOriginal(
+                    originalAddress, originalPrologue);
+
             System.arraycopy(callOriginal, 0, mainPage, offset, callOriginal.length);
         } else {
-            System.arraycopy(originalPrologue, 0, mainPage, offset, originalPrologue.length);
+            System.arraycopy(originalPrologue, 0, mainPage,
+                    offset, originalPrologue.length);
         }
         return mainPage;
     }

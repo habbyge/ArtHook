@@ -36,7 +36,9 @@ public enum Arch {
 
     private static boolean isThumb2() {
         try {
-            return (ArtMethod.of(ArtMethod.class.getDeclaredMethod("of", Method.class)).getEntryPointFromQuickCompiledCode() & 1) == 1;
+            return (ArtMethod.of(ArtMethod.class.getDeclaredMethod("of", Method.class))
+                    .getEntryPointFromQuickCompiledCode() & 1) == 1;
+
         } catch (NoSuchMethodException e) {
             // Should never happen
             throw new LibArtError("Unable to check isThumb2.", e);

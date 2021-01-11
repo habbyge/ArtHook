@@ -39,7 +39,9 @@ public final class Memory {
     }
 
     public static boolean unmap(long address, int length) {
-        logd(TAG, "Removing mapped memory of size " + length + " at " + addrHex(address));
+        logd(TAG, "Removing mapped memory of size " + length 
+                + " at " + addrHex(address));
+
         return munmap(address, length);
     }
 
@@ -62,7 +64,9 @@ public final class Memory {
     }
 
     public static void copy(long src, long dst, int length) {
-        logd(TAG, "Copy " + length + " bytes form " + addrHex(src) + " to " + addrHex(dst));
+        logd(TAG, "Copy " + length + " bytes form " + addrHex(src)
+                 + " to " + addrHex(dst));
+                 
         memcpy(src, dst, length);
     }
 }

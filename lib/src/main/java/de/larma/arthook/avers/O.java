@@ -27,7 +27,6 @@ import de.larma.arthook.ArtMethod;
 import de.larma.arthook.Memory;
 import de.larma.arthook.Native;
 
-import static de.larma.arthook.ArtMethod.ABSTRACT_METHOD_CLASS_NAME;
 import static de.larma.arthook.ArtMethod.EXECUTABLE_CLASS_NAME;
 import static de.larma.arthook.ArtMethod.FIELD_ACCESS_FLAGS;
 import static de.larma.arthook.ArtMethod.FIELD_ART_METHOD;
@@ -53,10 +52,13 @@ public class O extends VersionHelper{
     @Override
     public Object getArtMethodFieldNative(ArtMethod artMethod, String name) {
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, false);
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, false);
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, false);
+
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            return getNative(artMethod, 
+                FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, 
+                false);
         }
         return super.getArtMethodFieldNative(artMethod, name);
     }
@@ -64,26 +66,35 @@ public class O extends VersionHelper{
     private long getNative(ArtMethod artMethod, int num, boolean mirror) {
         long objectAddress = (long) artMethod.artMethod;
         int intSize = Native.is64Bit() && !mirror ? 8 : 4;
-        byte[] bytes = Memory.get(objectAddress + (mirror ? 0 : O_MIRROR_FIELDS) + intSize * num, intSize);
+        
+        byte[] bytes = Memory.get(objectAddress + (mirror ? 0 : O_MIRROR_FIELDS) 
+                + intSize * num, intSize);
+
         if (intSize == 8) {
             return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
         } else {
-            return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xFFFFFFFFL;
+            return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+                    .getInt() & 0xFFFFFFFFL;
         }
     }
 
     @Override
-    public boolean setArtMethodFieldNative(ArtMethod artMethod, String name, Object value) {
+    public boolean setArtMethodFieldNative(ArtMethod artMethod, 
+                                           String name, 
+                                           Object value) {
+
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ACCESS_FLAGS:
-                setMirror(artMethod, FIELD_ACCESS_FLAGS_MIRROR_INDEX, (int) value);
-                return true;
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
+            return true;
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            setNative(artMethod, 
+                    FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, 
+                    (Long) value);
+            return true;
+        case FIELD_ACCESS_FLAGS:
+            setMirror(artMethod, FIELD_ACCESS_FLAGS_MIRROR_INDEX, (int) value);
+            return true;
         }
         return super.setArtMethodFieldNative(artMethod, name, value);
     }
@@ -93,16 +104,24 @@ public class O extends VersionHelper{
         int intSize = Native.is64Bit() ? 8 : 4;
         byte[] bytes;
         if (Native.is64Bit()) {
-            bytes = ByteBuffer.allocate(intSize).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
+            bytes = ByteBuffer.allocate(intSize)
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                    .putLong(value).array();
         } else {
-            bytes = ByteBuffer.allocate(intSize).order(ByteOrder.LITTLE_ENDIAN).putInt((int) value).array();
+            bytes = ByteBuffer.allocate(intSize)
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                    .putInt((int) value).array();
         }
         Memory.put(bytes, objectAddress + O_MIRROR_FIELDS + intSize * num);
     }
 
     private void setMirror(ArtMethod artMethod, int num, int value) {
         long objectAddress = (long) artMethod.artMethod;
-        byte[] bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
+        
+        byte[] bytes = ByteBuffer.allocate(4)
+                .order(ByteOrder.LITTLE_ENDIAN)
+                .putInt(value).array();
+
         Memory.put(bytes, objectAddress + 4 * num);
     }
 

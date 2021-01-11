@@ -57,7 +57,8 @@ public abstract class VersionHelper {
         return null;
     }
 
-    public boolean setArtMethodFieldNative(ArtMethod artMethod, String name, Object value) {
+    public boolean setArtMethodFieldNative(ArtMethod artMethod,
+                                           String name, Object value) {
         return false;
     }
 
@@ -67,10 +68,13 @@ public abstract class VersionHelper {
         } else if (associatedMethod instanceof Constructor<?>) {
             return newConstructor((Constructor) associatedMethod, artMethod);
         }
-        throw new IllegalArgumentException("associatedMethod has to be instance of Method or Constructor, was " + associatedMethod + ".");
+        throw new IllegalArgumentException(
+                "associatedMethod has to be instance of Method or Constructor, was "
+                        + associatedMethod + ".");
     }
 
-    public abstract Constructor<?> newConstructor(Object originalConstructor, ArtMethod newArtMethod);
+    public abstract Constructor<?> newConstructor(Object originalConstructor,
+                                                  ArtMethod newArtMethod);
 
     public abstract Method newMethod(Object originalMethod, ArtMethod newArtMethod);
 

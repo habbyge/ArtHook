@@ -50,7 +50,9 @@ public class ArtMethod {
     public static final String FIELD_DEX_METHOD_INDEX = "dexMethodIndex";
     public static final String FIELD_ENTRY_POINT_FROM_JNI = "entryPointFromJni";
     public static final String FIELD_ENTRY_POINT_FROM_INTERPRETER = "entryPointFromInterpreter";
-    public static final String FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE = "entryPointFromQuickCompiledCode";
+
+    public static final String FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE
+            = "entryPointFromQuickCompiledCode";
 
     private static final boolean VERSION_L = SDK_INT == LOLLIPOP || SDK_INT == LOLLIPOP_MR1;
     private static final boolean VERSION_M_PLUS = SDK_INT >= M;

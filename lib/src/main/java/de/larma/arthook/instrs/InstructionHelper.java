@@ -66,7 +66,10 @@ public abstract class InstructionHelper {
         byte[] callOriginal = new byte[sizeOfCallOriginal()];
         System.arraycopy(originalPrologue, 0, callOriginal, 0, sizeOfDirectJump());
         byte[] directJump = createDirectJump(toPC(originalAddress + sizeOfDirectJump()));
-        System.arraycopy(directJump, 0, callOriginal, sizeOfDirectJump(), sizeOfDirectJump());
+
+        System.arraycopy(directJump, 0, callOriginal,
+                sizeOfDirectJump(), sizeOfDirectJump());
+
         return callOriginal;
     }
 
@@ -83,10 +86,14 @@ public abstract class InstructionHelper {
         return sizeOfTargetJump;
     }
 
-    public abstract byte[] createTargetJump(long targetAddress, long entryPointFromQuickCompiledCode, long srcAddress);
+    public abstract byte[] createTargetJump(long targetAddress,
+                                            long entryPointFromQuickCompiledCode,
+                                            long srcAddress);
 
     public byte[] createTargetJump(HookPage.Hook hook) {
-        return createTargetJump(hook.target.getAddress(), hook.target.getEntryPointFromQuickCompiledCode(), hook.src.getAddress());
+        return createTargetJump(hook.target.getAddress(),
+                hook.target.getEntryPointFromQuickCompiledCode(),
+                hook.src.getAddress());
     }
 
     @Deprecated
@@ -112,11 +119,15 @@ public abstract class InstructionHelper {
 
     // Helpers
     protected static void writeInt(int i, ByteOrder order, byte[] target, int pos) {
-        System.arraycopy(ByteBuffer.allocate(4).order(order).putInt(i).array(), 0, target, pos, 4);
+        System.arraycopy(
+                ByteBuffer.allocate(4).order(order).putInt(i).array(),
+                0, target, pos, 4);
     }
 
     protected static void writeLong(long i, ByteOrder order, byte[] target, int pos) {
-        System.arraycopy(ByteBuffer.allocate(8).order(order).putLong(i).array(), 0, target, pos, 8);
+        System.arraycopy(
+                ByteBuffer.allocate(8).order(order).putLong(i).array(),
+                0, target, pos, 8);
     }
 
     protected static String toHex(byte[] bytes) {

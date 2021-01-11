@@ -41,7 +41,10 @@ public class N extends VersionHelper{
     private static final int N_MIRROR_FIELDS = Native.is64Bit() ? 24 : 20;
     private static final int N_NATIVE_FIELDS_32 = 16;
     private static final int N_NATIVE_FIELDS_64 = 32;
-    private static final int N_NATIVE_FIELDS = Native.is64Bit() ? N_NATIVE_FIELDS_64 : N_NATIVE_FIELDS_32;
+
+    private static final int N_NATIVE_FIELDS = Native.is64Bit()
+            ? N_NATIVE_FIELDS_64 : N_NATIVE_FIELDS_32;
+
     private static final int N_OBJECT_SIZE = N_MIRROR_FIELDS + N_NATIVE_FIELDS;
 
     @Override
@@ -52,10 +55,13 @@ public class N extends VersionHelper{
     @Override
     public Object getArtMethodFieldNative(ArtMethod artMethod, String name) {
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, false);
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, false);
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, false);
+
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            return getNative(artMethod,
+                    FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX,
+                    false);
         }
         return super.getArtMethodFieldNative(artMethod, name);
     }
@@ -63,26 +69,36 @@ public class N extends VersionHelper{
     private long getNative(ArtMethod artMethod, int num, boolean mirror) {
         long objectAddress = (long) artMethod.artMethod;
         int intSize = Native.is64Bit() && !mirror ? 8 : 4;
-        byte[] bytes = Memory.get(objectAddress + (mirror ? 0 : N_MIRROR_FIELDS) + intSize * num, intSize);
+
+        byte[] bytes = Memory.get(objectAddress + (mirror ?
+                0 : N_MIRROR_FIELDS) + intSize * num, intSize);
+
         if (intSize == 8) {
             return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
         } else {
-            return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xFFFFFFFFL;
+            return ByteBuffer.wrap(bytes).order(
+                    ByteOrder.LITTLE_ENDIAN).getInt() & 0xFFFFFFFFL;
         }
     }
 
     @Override
-    public boolean setArtMethodFieldNative(ArtMethod artMethod, String name, Object value) {
+    public boolean setArtMethodFieldNative(ArtMethod artMethod,
+                                           String name, Object value) {
+
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ACCESS_FLAGS:
-                setMirror(artMethod, FIELD_ACCESS_FLAGS_MIRROR_INDEX, (int) value);
-                return true;
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
+            return true;
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            setNative(artMethod,
+                    FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX,
+                    (Long) value);
+
+            return true;
+
+        case FIELD_ACCESS_FLAGS:
+            setMirror(artMethod, FIELD_ACCESS_FLAGS_MIRROR_INDEX, (int) value);
+            return true;
         }
         return super.setArtMethodFieldNative(artMethod, name, value);
     }
@@ -92,24 +108,35 @@ public class N extends VersionHelper{
         int intSize = Native.is64Bit() ? 8 : 4;
         byte[] bytes;
         if (Native.is64Bit()) {
-            bytes = ByteBuffer.allocate(intSize).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
+            bytes = ByteBuffer.allocate(intSize)
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                    .putLong(value).array();
         } else {
-            bytes = ByteBuffer.allocate(intSize).order(ByteOrder.LITTLE_ENDIAN).putInt((int) value).array();
+            bytes = ByteBuffer.allocate(intSize)
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                    .putInt((int) value).array();
         }
         Memory.put(bytes, objectAddress + N_MIRROR_FIELDS + intSize * num);
     }
 
     private void setMirror(ArtMethod artMethod, int num, int value) {
         long objectAddress = (long) artMethod.artMethod;
-        byte[] bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
+
+        byte[] bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN)
+                .putInt(value)
+                .array();
+
         Memory.put(bytes, objectAddress + 4 * num);
     }
 
     @Override
     public Method newMethod(Object associatedMethod, ArtMethod newArtMethod) {
         try {
-            Constructor<Method> methodConstructor = Method.class.getDeclaredConstructor();
-            // we can't use methodConstructor.setAccessible(true); because Google does not like it
+            Constructor<Method> methodConstructor =
+                    Method.class.getDeclaredConstructor();
+
+            // we can't use methodConstructor.setAccessible(true);
+            // because Google does not like it
             // but we have some internal field for it \o/
             Field override = AccessibleObject.class.getDeclaredField("override");
             override.setAccessible(true);
@@ -117,12 +144,16 @@ public class N extends VersionHelper{
 
             Method m = methodConstructor.newInstance();
             m.setAccessible(true);
-            for (Field field : Class.forName(ABSTRACT_METHOD_CLASS_NAME).getDeclaredFields()) {
+            for (Field field : Class.forName(ABSTRACT_METHOD_CLASS_NAME)
+                    .getDeclaredFields()) {
+
                 field.setAccessible(true);
                 field.set(m, field.get(associatedMethod));
             }
 
-            Field artMethodField = Class.forName(ABSTRACT_METHOD_CLASS_NAME).getDeclaredField(FIELD_ART_METHOD);
+            Field artMethodField = Class.forName(ABSTRACT_METHOD_CLASS_NAME)
+                    .getDeclaredField(FIELD_ART_METHOD);
+
             artMethodField.setAccessible(true);
             artMethodField.set(m, newArtMethod.artMethod);
 
@@ -133,10 +164,15 @@ public class N extends VersionHelper{
     }
 
     @Override
-    public Constructor<?> newConstructor(Object associatedMethod, ArtMethod newArtMethod) {
+    public Constructor<?> newConstructor(Object associatedMethod,
+                                         ArtMethod newArtMethod) {
+
         try {
-            Constructor<Constructor> constructorConstructor = Constructor.class.getDeclaredConstructor();
-            // we can't use constructorConstructor.setAccessible(true); because Google does not like it
+            Constructor<Constructor> constructorConstructor =
+                    Constructor.class.getDeclaredConstructor();
+
+            // we can't use constructorConstructor.setAccessible(true);
+            // because Google does not like it
             // but we have some internal field for it \o/
             Field override = AccessibleObject.class.getDeclaredField("override");
             override.setAccessible(true);
@@ -144,12 +180,16 @@ public class N extends VersionHelper{
 
             Constructor<?> c = constructorConstructor.newInstance();
             c.setAccessible(true);
-            for (Field field : Class.forName(ABSTRACT_METHOD_CLASS_NAME).getDeclaredFields()) {
+            for (Field field : Class.forName(ABSTRACT_METHOD_CLASS_NAME)
+                    .getDeclaredFields()) {
+
                 field.setAccessible(true);
                 field.set(c, field.get(associatedMethod));
             }
 
-            Field artMethodField = Class.forName(ABSTRACT_METHOD_CLASS_NAME).getDeclaredField(FIELD_ART_METHOD);
+            Field artMethodField = Class.forName(ABSTRACT_METHOD_CLASS_NAME)
+                    .getDeclaredField(FIELD_ART_METHOD);
+
             artMethodField.setAccessible(true);
             artMethodField.set(c, newArtMethod.artMethod);
 

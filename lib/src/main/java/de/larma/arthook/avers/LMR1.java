@@ -42,12 +42,12 @@ public class LMR1 extends LMR0 {
     @Override
     public Object getArtMethodFieldNative(ArtMethod artMethod, String name) {
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_INTERPRETER:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_INTERPRETER_NATIVE_INDEX);
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX);
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                return getNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX);
+        case FIELD_ENTRY_POINT_FROM_INTERPRETER:
+            return getNative(artMethod, FIELD_ENTRY_POINT_FROM_INTERPRETER_NATIVE_INDEX);
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            return getNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX);
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            return getNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX);
         }
         return super.getArtMethodFieldNative(artMethod, name);
     }
@@ -66,15 +66,15 @@ public class LMR1 extends LMR0 {
     @Override
     public boolean setArtMethodFieldNative(ArtMethod artMethod, String name, Object value) {
         switch (name) {
-            case FIELD_ENTRY_POINT_FROM_INTERPRETER:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_INTERPRETER_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ENTRY_POINT_FROM_JNI:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
-                return true;
-            case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
-                setNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, (Long) value);
-                return true;
+        case FIELD_ENTRY_POINT_FROM_INTERPRETER:
+            setNative(artMethod, FIELD_ENTRY_POINT_FROM_INTERPRETER_NATIVE_INDEX, (Long) value);
+            return true;
+        case FIELD_ENTRY_POINT_FROM_JNI:
+            setNative(artMethod, FIELD_ENTRY_POINT_FROM_JNI_NATIVE_INDEX, (Long) value);
+            return true;
+        case FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE:
+            setNative(artMethod, FIELD_ENTRY_POINT_FROM_QUICK_COMPILED_CODE_NATIVE_INDEX, (Long) value);
+            return true;
         }
         return super.setArtMethodFieldNative(artMethod, name, value);
     }
